@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'currency_provider.dart';
 import 'inventorypage.dart'; // Import the InventoryPage
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SummonPage extends StatefulWidget {
   @override
@@ -49,7 +50,7 @@ class _SummonPageState extends State<SummonPage> {
   }
 
   void _performSummon(int count, CurrencyProvider currencyProvider) {
-    int summonCost = 160 * count; // 160 per summon
+    int summonCost = 1 * count; // 160 per summon
     if (currencyProvider.currency >= summonCost) {
       setState(() {
         for (int i = 0; i < count; i++) {
@@ -57,6 +58,7 @@ class _SummonPageState extends State<SummonPage> {
         }
         currencyProvider.decreaseCurrency(summonCost); // Decrease the currency
       });
+      _saveSummonedCards(); // Save the summoned cards after summoning
     } else {
       _showNotEnoughCurrencyMessage(); // Show message if currency is insufficient
     }
@@ -80,6 +82,12 @@ class _SummonPageState extends State<SummonPage> {
         );
       },
     );
+  }
+
+  // Save the summoned cards to SharedPreferences
+  Future<void> _saveSummonedCards() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('summonedCards', summonedCards);
   }
 
   @override
@@ -120,21 +128,10 @@ class _SummonPageState extends State<SummonPage> {
               // Navigate to the inventory page
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => InventoryPage(summonedCards: summonedCards)),
+                MaterialPageRoute(builder: (context) => InventoryPage()),
               );
             },
             child: Text('View Inventory'),
-          ),
-          SizedBox(height: 20),
-          Expanded(
-            child: ListView.builder(
-              itemCount: summonedCards.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(summonedCards[index]),
-                );
-              },
-            ),
           ),
         ],
       ),

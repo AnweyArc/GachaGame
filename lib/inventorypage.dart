@@ -1,12 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:collection/collection.dart'; // Import collection package to group cards
-import 'package:provider/provider.dart';
+import 'package:collection/collection.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+class InventoryPage extends StatefulWidget {
+  @override
+  _InventoryPageState createState() => _InventoryPageState();
+}
 
-class InventoryPage extends StatelessWidget {
-  final List<String> summonedCards;
+class _InventoryPageState extends State<InventoryPage> {
+  List<String> summonedCards = [];
 
-  InventoryPage({required this.summonedCards});
+  @override
+  void initState() {
+    super.initState();
+    _loadSummonedCards();
+  }
+
+  // Load the summoned cards from SharedPreferences
+  Future<void> _loadSummonedCards() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      summonedCards = prefs.getStringList('summonedCards') ?? [];
+    });
+  }
+
+  // Save the summoned cards to SharedPreferences
+  Future<void> _saveSummonedCards() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('summonedCards', summonedCards);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +55,16 @@ class InventoryPage extends StatelessWidget {
                 );
               },
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Example: Adding a new card to the inventory and saving it
+          setState(() {
+            summonedCards.add('Epic'); // Adding an example card (Epic)
+          });
+          _saveSummonedCards(); // Save the updated inventory
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 }
