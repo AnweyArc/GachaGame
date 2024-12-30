@@ -37,6 +37,26 @@ class _SummonPageState extends State<SummonPage> {
 
   List<String> summonedCards = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _loadSummonedCards();
+  }
+
+  // Load the summoned cards from SharedPreferences
+  Future<void> _loadSummonedCards() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      summonedCards = prefs.getStringList('summonedCards') ?? [];
+    });
+  }
+
+  // Save the summoned cards to SharedPreferences
+  Future<void> _saveSummonedCards() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('summonedCards', summonedCards);
+  }
+
   String _summonCard() {
     double randomValue = Random().nextDouble() * 100;
     double cumulative = 0.0;
@@ -84,12 +104,6 @@ class _SummonPageState extends State<SummonPage> {
     );
   }
 
-  // Save the summoned cards to SharedPreferences
-  Future<void> _saveSummonedCards() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('summonedCards', summonedCards);
-  }
-
   @override
   Widget build(BuildContext context) {
     final currencyProvider = Provider.of<CurrencyProvider>(context);
@@ -133,6 +147,21 @@ class _SummonPageState extends State<SummonPage> {
             },
             child: Text('View Inventory'),
           ),
+          SizedBox(height: 20),
+          // Recently summoned cards display
+          Text(
+            'Recently Summoned Cards:',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 10),
+          summonedCards.isEmpty
+              ? Text('No cards summoned yet.')
+              : Column(
+                  children: summonedCards
+                      .take(5) // Show only the last 5 summoned cards
+                      .map((card) => Text(card, style: TextStyle(fontSize: 16)))
+                      .toList(),
+                ),
         ],
       ),
     );

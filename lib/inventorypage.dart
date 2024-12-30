@@ -55,16 +55,6 @@ class _InventoryPageState extends State<InventoryPage> {
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Example: Adding a new card to the inventory and saving it
-          setState(() {
-            summonedCards.add('Epic'); // Adding an example card (Epic)
-          });
-          _saveSummonedCards(); // Save the updated inventory
-        },
-        child: Icon(Icons.add),
-      ),
     );
   }
 }
