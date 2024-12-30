@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'currency_provider.dart';
 import 'summonpage.dart';
+import 'cards.dart';
 
 void main() {
   runApp(MyApp());
@@ -84,14 +85,16 @@ class GamePage extends StatelessWidget {
             top: 20,
             right: 20,
             child: Text(
-              'Luck: 0', // You can update luck logic here if necessary
+              'Luck: 0', // Update with actual luck value logic if necessary
               style: TextStyle(fontSize: 20),
             ),
           ),
           Center(
             child: ElevatedButton(
               onPressed: () {
-                currencyProvider.increaseCurrency(1); // Example for currency generation
+                final equippedCard = currencyProvider.equippedCard; // Get the equipped card
+                final multiplier = equippedCard?.currencyMultiplier ?? 1; // Default to 1 if no card equipped
+                currencyProvider.increaseCurrency(1 * multiplier); // Multiply base currency by multiplier
               },
               child: Text('Click to Generate Currency'),
             ),

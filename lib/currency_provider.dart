@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'cards.dart';
 
 class CurrencyProvider extends ChangeNotifier {
-  // Default currency value, can be modified by commenting/uncommenting the below line
-  // int _currency = 1000;  // Uncomment this for hardcoded default value
-
-  int _currency = 0;  // Default to 0, will be modified by SharedPreferences if loaded
+  int _currency = 0; // Default to 0, will be modified by SharedPreferences if loaded
+  CardModel? equippedCard; // Track the equipped card
 
   int get currency => _currency;
 
   // Load the currency value from SharedPreferences
   Future<void> loadCurrency() async {
     final prefs = await SharedPreferences.getInstance();
-    
-    // Optionally, uncomment the line below to hardcode the initial value
-    // _currency = 1000; // Set hardcoded value, uncomment to use it
-    _currency = prefs.getInt('currency') ?? _currency;  // Load from SharedPreferences or use the default
+    _currency = prefs.getInt('currency') ?? _currency; // Load from SharedPreferences or use the default
     notifyListeners(); // Notify listeners when currency is loaded
   }
 
@@ -25,10 +21,11 @@ class CurrencyProvider extends ChangeNotifier {
     await prefs.setInt('currency', _currency);
   }
 
-  // Increase the currency by a given value
-  void increaseCurrency(int amount) {
-    _currency += amount;
-    saveCurrency();  // Save updated currency value
+  // Increase the currency by a given value, factoring in the currencyMultiplier of the equipped card
+  void increaseCurrency(int baseAmount) {
+    final multiplier = equippedCard?.currencyMultiplier ?? 1; // Default multiplier is 1 if no card equipped
+    _currency += baseAmount * multiplier;
+    saveCurrency(); // Save updated currency value
     notifyListeners(); // Notify listeners about the change
   }
 
@@ -36,8 +33,14 @@ class CurrencyProvider extends ChangeNotifier {
   void decreaseCurrency(int amount) {
     if (_currency >= amount) {
       _currency -= amount;
-      saveCurrency();  // Save updated currency value
+      saveCurrency(); // Save updated currency value
       notifyListeners(); // Notify listeners about the change
     }
+  }
+
+  // Equip a card, setting it as the currently active card
+  void equipCard(CardModel card) {
+    equippedCard = card;
+    notifyListeners(); // Notify listeners when a new card is equipped
   }
 }

@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'currency_provider.dart';
 import 'inventorypage.dart'; // Import the InventoryPage
 import 'package:shared_preferences/shared_preferences.dart';
+import 'cards.dart';
+
 
 class SummonPage extends StatefulWidget {
   @override
