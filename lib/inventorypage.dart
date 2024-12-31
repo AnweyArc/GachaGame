@@ -107,30 +107,40 @@ class _InventoryPageState extends State<InventoryPage> {
                       var count = sortedGroupedCards[index].value.length;
                       var card = cardRarityList.firstWhere((card) => card.rarity == rarity);
 
-                      return ListTile(
-                        title: Text('$rarity x $count'),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Cost: ${card.cost}'),
-                            Text('Equip Requirement: ${card.equipQuantity}'),
-                            Text('Currency Multiplier: ${card.currencyMultiplier}x'),
-                          ],
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            TextButton(
-                              onPressed: () => _sellCard(rarity),
-                              child: Text('Sell'),
-                            ),
-                            TextButton(
-                              onPressed: cardQuantities[rarity]! >= card.equipQuantity || equippedCards.contains(rarity)
-                                  ? () => _toggleEquipCard(rarity)
-                                  : null,
-                              child: Text(equippedCards.contains(rarity) ? 'Unequip' : 'Equip'),
-                            ),
-                          ],
+                      return Card(
+                        color: card.cardColor.withOpacity(0.2), // Light background using card color
+                        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                        child: ListTile(
+                          title: Text(
+                            '$rarity x $count',
+                            style: TextStyle(color: card.cardColor, fontWeight: FontWeight.bold), // Text color matches the card color
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Cost: ${card.cost}'),
+                              Text('Equip Requirement: ${card.equipQuantity}'),
+                              Text('Currency Multiplier: ${card.currencyMultiplier}x'),
+                            ],
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextButton(
+                                onPressed: () => _sellCard(rarity),
+                                child: Text('Sell', style: TextStyle(color: card.cardColor)),
+                              ),
+                              TextButton(
+                                onPressed: cardQuantities[rarity]! >= card.equipQuantity || equippedCards.contains(rarity)
+                                    ? () => _toggleEquipCard(rarity)
+                                    : null,
+                                child: Text(
+                                  equippedCards.contains(rarity) ? 'Unequip' : 'Equip',
+                                  style: TextStyle(color: card.cardColor),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
