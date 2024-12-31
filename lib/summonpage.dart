@@ -21,7 +21,7 @@ class _SummonPageState extends State<SummonPage> {
     'Ultra Rare',
     'Ultimate',
     'Secret Rarity',
-    'Godly'
+    'Godly',
   ];
 
   final Map<String, double> rarityChances = {
@@ -33,7 +33,7 @@ class _SummonPageState extends State<SummonPage> {
     'Ultra Rare': 0.002,
     'Ultimate': 0.0008,
     'Secret Rarity': 0.0002,
-    'Godly': 0.000001
+    'Godly': 0.000001,
   };
 
   List<String> summonedCards = [];
@@ -44,7 +44,6 @@ class _SummonPageState extends State<SummonPage> {
     _loadSummonedCards();
   }
 
-  // Load the summoned cards from SharedPreferences
   Future<void> _loadSummonedCards() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -52,7 +51,6 @@ class _SummonPageState extends State<SummonPage> {
     });
   }
 
-  // Save the summoned cards to SharedPreferences
   Future<void> _saveSummonedCards() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('summonedCards', summonedCards);
@@ -61,6 +59,7 @@ class _SummonPageState extends State<SummonPage> {
   String _summonCard() {
     double randomValue = Random().nextDouble() * 100;
     double cumulative = 0.0;
+
     for (var rarity in rarities) {
       cumulative += rarityChances[rarity]!;
       if (randomValue <= cumulative) {
@@ -71,17 +70,18 @@ class _SummonPageState extends State<SummonPage> {
   }
 
   void _performSummon(int count, CurrencyProvider currencyProvider) {
-    int summonCost = 25 * count; // 25 per summon
+    int summonCost = 25 * count;
+
     if (currencyProvider.currency >= summonCost) {
       setState(() {
         for (int i = 0; i < count; i++) {
           summonedCards.add(_summonCard());
         }
-        currencyProvider.decreaseCurrency(summonCost); // Decrease the currency
+        currencyProvider.decreaseCurrency(summonCost);
       });
-      _saveSummonedCards(); // Save the summoned cards after summoning
+      _saveSummonedCards();
     } else {
-      _showNotEnoughCurrencyMessage(); // Show message if currency is insufficient
+      _showNotEnoughCurrencyMessage();
     }
   }
 
@@ -90,18 +90,41 @@ class _SummonPageState extends State<SummonPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Currency not enough!"),
-          content: Text("Click more!"),
+          title: Text("Insufficient Currency"),
+          content: Text("You do not have enough currency to summon cards."),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
               child: Text('Close'),
             ),
           ],
         );
       },
+    );
+  }
+
+  void _showCardDetails(String rarity) {
+    String? imagePath = cardRarityList
+        .firstWhere(
+          (card) => card.rarity == rarity,
+          orElse: () => CardModel(
+            rarity: 'Unknown',
+            cost: 0,
+            luckValue: 0,
+            equipQuantity: 0,
+            currencyValue: 0,
+            currencyMultiplier: 0,
+            cardColor: Colors.grey,
+            imagePath: 'assets/cardbackgrounds/default.png',
+          ),
+        )
+        .imagePath;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CardDetailsPage(rarity: rarity, imagePath: imagePath),
+      ),
     );
   }
 
@@ -116,9 +139,15 @@ class _SummonPageState extends State<SummonPage> {
       body: Column(
         children: [
           SizedBox(height: 20),
-          Text('Currency: ${currencyProvider.currency}', style: TextStyle(fontSize: 18)),
+          Text(
+            'Currency: ${currencyProvider.currency}',
+            style: TextStyle(fontSize: 18),
+          ),
           SizedBox(height: 20),
-          Text('Summon your cards!', style: TextStyle(fontSize: 18)),
+          Text(
+            'Summon your cards!',
+            style: TextStyle(fontSize: 18),
+          ),
           SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -140,19 +169,14 @@ class _SummonPageState extends State<SummonPage> {
           SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-              // Navigate to the inventory page
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => InventoryPage()),
-              ).then((_) {
-                // Reload summoned cards after returning from inventory
-                _loadSummonedCards();
-              });
+              ).then((_) => _loadSummonedCards());
             },
             child: Text('View Inventory'),
           ),
           SizedBox(height: 20),
-          // Recently summoned cards display
           Text(
             'Recently Summoned Cards:',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -160,13 +184,80 @@ class _SummonPageState extends State<SummonPage> {
           SizedBox(height: 10),
           summonedCards.isEmpty
               ? Text('No cards summoned yet.')
-              : Column(
-                  children: summonedCards
-                      .take(5) // Show only the last 5 summoned cards
-                      .map((card) => Text(card, style: TextStyle(fontSize: 16)))
-                      .toList(),
+              : Container(
+                  height: 200,
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 5,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                    ),
+                    itemCount: summonedCards.take(10).length,
+                    itemBuilder: (context, index) {
+                      String rarity = summonedCards[summonedCards.length - 1 - index];
+                      return GestureDetector(
+                        onTap: () => _showCardDetails(rarity),
+                        child: Image.asset(
+                          cardRarityList
+                              .firstWhere(
+                                (card) => card.rarity == rarity,
+                                orElse: () => CardModel(
+                                  rarity: 'Unknown',
+                                  cost: 0,
+                                  luckValue: 0,
+                                  equipQuantity: 0,
+                                  currencyValue: 0,
+                                  currencyMultiplier: 0,
+                                  cardColor: Colors.grey,
+                                  imagePath: 'assets/cardbackgrounds/default.png',
+                                ),
+                              )
+                              .imagePath,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    },
+                  ),
                 ),
         ],
+      ),
+    );
+  }
+}
+
+class CardDetailsPage extends StatelessWidget {
+  final String rarity;
+  final String? imagePath;
+
+  CardDetailsPage({required this.rarity, required this.imagePath});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(rarity),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(imagePath ?? 'assets/cardbackgrounds/default.png', fit: BoxFit.cover),
+            SizedBox(height: 20),
+            Text(
+              'Rarity: $rarity',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'This is a detailed description of the card with rarity $rarity.',
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
