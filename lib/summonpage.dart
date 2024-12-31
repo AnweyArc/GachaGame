@@ -72,7 +72,7 @@ class _SummonPageState extends State<SummonPage> {
   }
 
   void _performSummon(int count, CurrencyProvider currencyProvider) {
-    int summonCost = 1 * count; // 160 per summon
+    int summonCost = 15 * count; // 15 per summon
     if (currencyProvider.currency >= summonCost) {
       setState(() {
         for (int i = 0; i < count; i++) {
@@ -126,15 +126,15 @@ class _SummonPageState extends State<SummonPage> {
             children: [
               ElevatedButton(
                 onPressed: () => _performSummon(1, currencyProvider),
-                child: Text('Summon x1 (160 Currency)'),
+                child: Text('Summon x1 (15 Currency)'),
               ),
               ElevatedButton(
                 onPressed: () => _performSummon(5, currencyProvider),
-                child: Text('Summon x5 (800 Currency)'),
+                child: Text('Summon x5 (75 Currency)'),
               ),
               ElevatedButton(
                 onPressed: () => _performSummon(10, currencyProvider),
-                child: Text('Summon x10 (1600 Currency)'),
+                child: Text('Summon x10 (150 Currency)'),
               ),
             ],
           ),

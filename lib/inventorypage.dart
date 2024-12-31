@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:collection/collection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'currency_provider.dart'; // Import CurrencyProvider
-import 'cards.dart';
+import 'cards.dart'; // Import your card model
 
 class InventoryPage extends StatefulWidget {
   @override
@@ -21,6 +21,7 @@ class _InventoryPageState extends State<InventoryPage> {
     _loadSummonedCards();
   }
 
+  // Load summoned cards and update quantities
   Future<void> _loadSummonedCards() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -29,6 +30,7 @@ class _InventoryPageState extends State<InventoryPage> {
     });
   }
 
+  // Calculate the quantity of each card
   Map<String, int> _calculateCardQuantities(List<String> cards) {
     Map<String, int> quantities = {};
     for (var card in cards) {
@@ -37,11 +39,13 @@ class _InventoryPageState extends State<InventoryPage> {
     return quantities;
   }
 
+  // Save the summoned cards data to SharedPreferences
   Future<void> _saveData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('summonedCards', summonedCards);
   }
 
+  // Sell a selected card
   void _sellCard(String cardRarity) {
     final card = cardRarityList.firstWhere((card) => card.rarity == cardRarity);
     final currencyProvider = Provider.of<CurrencyProvider>(context, listen: false);
@@ -57,20 +61,130 @@ class _InventoryPageState extends State<InventoryPage> {
     }
   }
 
+  // Toggle the equipment status of a card
   void _toggleEquipCard(String cardRarity) {
     final card = cardRarityList.firstWhere((card) => card.rarity == cardRarity);
     final currencyProvider = Provider.of<CurrencyProvider>(context, listen: false);
 
     setState(() {
       if (equippedCards.contains(cardRarity)) {
+        // Unequip the selected card
         equippedCards.remove(cardRarity);
         currencyProvider.unequipCard(card);
-      } else if (cardQuantities[cardRarity]! >= card.equipQuantity) {
-        equippedCards.add(cardRarity);
-        currencyProvider.equipCard(card);
+      } else {
+        // Unequip all currently equipped cards
+        equippedCards.forEach((equippedRarity) {
+          final equippedCard = cardRarityList.firstWhere((card) => card.rarity == equippedRarity);
+          currencyProvider.unequipCard(equippedCard);
+        });
+
+        equippedCards.clear(); // Clear all equipped cards
+
+        // Equip the newly selected card if requirements are met
+        if (cardQuantities[cardRarity]! >= card.equipQuantity) {
+          equippedCards.add(cardRarity);
+          currencyProvider.equipCard(card);
+        }
       }
     });
   }
+  
+
+  // Function to show a dialog when selling a card
+  void _showSellDialog(String cardRarity) {
+  final card = cardRarityList.firstWhere((card) => card.rarity == cardRarity);
+  final currencyProvider = Provider.of<CurrencyProvider>(context, listen: false);
+  final totalAmount = card.cost * cardQuantities[cardRarity]!;
+
+  TextEditingController amountController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.sell, color: card.cardColor),
+            SizedBox(width: 8),
+            Text('Sell ${card.rarity} Card'),
+          ],
+        ),
+        content: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Card Quantity: ${cardQuantities[cardRarity]!}',
+                style: TextStyle(fontSize: 16),
+              ),
+              SizedBox(height: 10),
+              TextField(
+                controller: amountController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Sell By Amount',
+                  hintText: 'Enter amount to sell',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      final amountToSell = int.tryParse(amountController.text);
+                      if (amountToSell != null && amountToSell > 0) {
+                        final sellingPrice = card.cost * amountToSell;
+                        currencyProvider.increaseCurrency(sellingPrice);
+
+                        setState(() {
+                          // Update card quantity
+                          cardQuantities[cardRarity] = cardQuantities[cardRarity]! - amountToSell;
+
+                          // Remove the corresponding amount of cards from summonedCards list
+                          for (int i = 0; i < amountToSell; i++) {
+                            summonedCards.remove(cardRarity);
+                          }
+
+                          // If quantity becomes zero, remove the card from the inventory entirely
+                          if (cardQuantities[cardRarity]! <= 0) {
+                            cardQuantities.remove(cardRarity);
+                          }
+                        });
+                        _saveData();
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: Text('Sell'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      currencyProvider.increaseCurrency(totalAmount);
+                      setState(() {
+                        // Sell all of the cards
+                        currencyProvider.increaseCurrency(card.cost * cardQuantities[cardRarity]!);
+                        summonedCards.removeWhere((element) => element == cardRarity);
+                        cardQuantities.remove(cardRarity); // Remove the card completely
+                      });
+                      _saveData();
+                      Navigator.pop(context);
+                    },
+                    child: Text('Sell All'),
+                  ),
+                ],
+              ),
+              SizedBox(height: 15),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -122,14 +236,14 @@ class _InventoryPageState extends State<InventoryPage> {
                             ),
                             SizedBox(height: 10),
                             Text('Cost: ${card.cost}'),
-                            Text('Equip: ${card.equipQuantity}'),
+                            Text('Quantity to Equip: ${card.equipQuantity}'),
                             Text('Multiplier: ${card.currencyMultiplier}x'),
                             SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 TextButton(
-                                  onPressed: () => _sellCard(rarity),
+                                  onPressed: () => _showSellDialog(rarity),
                                   child: Text(
                                     'Sell',
                                     style: TextStyle(color: card.cardColor),

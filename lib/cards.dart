@@ -26,6 +26,7 @@ class CardModel {
     return '$rarity Card (Cost: $cost, Luck Value: $luckValue, Currency Value: $currencyValue, Equip Quantity: $equipQuantity, Currency Multiplier: $currencyMultiplier, Color: $cardColor)';
   }
 }
+//Common, Normal, Rare, Epic, Super Rare, Ultra Rare, Ultimate, Secret Rarity, Godly
 
 // Example card instances
 List<CardModel> cardRarityList = [
@@ -33,7 +34,7 @@ List<CardModel> cardRarityList = [
     rarity: 'Common',
     cost: 10,
     luckValue: 1,
-    equipQuantity: 500,
+    equipQuantity: 250,
     currencyValue: 10,
     currencyMultiplier: 2,
     cardColor: Colors.black,
@@ -42,7 +43,7 @@ List<CardModel> cardRarityList = [
     rarity: 'Normal',
     cost: 20,
     luckValue: 2,
-    equipQuantity: 250,
+    equipQuantity: 200,
     currencyValue: 20,
     currencyMultiplier: 3,
     cardColor: Colors.green,
@@ -51,7 +52,7 @@ List<CardModel> cardRarityList = [
     rarity: 'Rare',
     cost: 50,
     luckValue: 5,
-    equipQuantity: 150,
+    equipQuantity: 170,
     currencyValue: 50,
     currencyMultiplier: 5,
     cardColor: Colors.blue,
@@ -60,7 +61,7 @@ List<CardModel> cardRarityList = [
     rarity: 'Epic',
     cost: 60,
     luckValue: 10,
-    equipQuantity: 100,
+    equipQuantity: 150,
     currencyValue: 100,
     currencyMultiplier: 7,
     cardColor: Colors.purple,
@@ -69,7 +70,7 @@ List<CardModel> cardRarityList = [
     rarity: 'Super Rare',
     cost: 80,
     luckValue: 20,
-    equipQuantity: 75,
+    equipQuantity: 120,
     currencyValue: 200,
     currencyMultiplier: 10,
     cardColor: Colors.orange,
@@ -78,7 +79,7 @@ List<CardModel> cardRarityList = [
     rarity: 'Ultra Rare',
     cost: 120,
     luckValue: 30,
-    equipQuantity: 50,
+    equipQuantity: 70,
     currencyValue: 500,
     currencyMultiplier: 13,
     cardColor: Colors.yellow,
@@ -87,7 +88,7 @@ List<CardModel> cardRarityList = [
     rarity: 'Ultimate',
     cost: 160,
     luckValue: 50,
-    equipQuantity: 25,
+    equipQuantity: 50,
     currencyValue: 1000,
     currencyMultiplier: 17,
     cardColor: Colors.deepPurple,
@@ -96,7 +97,7 @@ List<CardModel> cardRarityList = [
     rarity: 'Secret Rarity',
     cost: 500,
     luckValue: 100,
-    equipQuantity: 10,
+    equipQuantity: 20,
     currencyValue: 5000,
     currencyMultiplier: 20,
     cardColor: Colors.red,
