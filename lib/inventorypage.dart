@@ -226,6 +226,13 @@ class _InventoryPageState extends State<InventoryPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            Expanded(
+                              child: Image.asset(
+                                card.imagePath, // Load card image
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            SizedBox(height: 10),
                             Text(
                               '$rarity x $count',
                               style: TextStyle(
@@ -263,6 +270,7 @@ class _InventoryPageState extends State<InventoryPage> {
                           ],
                         ),
                       );
+
                     },
                   ),
           ),

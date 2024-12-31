@@ -7,7 +7,8 @@ class CardModel {
   final int currencyValue;
   final int equipQuantity;
   final int currencyMultiplier;
-  final Color cardColor; // New attribute for card color
+  final Color cardColor; // Card color
+  final String imagePath; // New attribute for image path
 
   // Constructor
   CardModel({
@@ -17,16 +18,16 @@ class CardModel {
     required this.currencyValue,
     required this.equipQuantity,
     required this.currencyMultiplier,
-    required this.cardColor, // Initialize new attribute
+    required this.cardColor,
+    required this.imagePath, // Initialize the new attribute
   });
 
   // Optional: To easily print the card information
   @override
   String toString() {
-    return '$rarity Card (Cost: $cost, Luck Value: $luckValue, Currency Value: $currencyValue, Equip Quantity: $equipQuantity, Currency Multiplier: $currencyMultiplier, Color: $cardColor)';
+    return '$rarity Card (Cost: $cost, Luck Value: $luckValue, Currency Value: $currencyValue, Equip Quantity: $equipQuantity, Currency Multiplier: $currencyMultiplier, Color: $cardColor, ImagePath: $imagePath)';
   }
 }
-//Common, Normal, Rare, Epic, Super Rare, Ultra Rare, Ultimate, Secret Rarity, Godly
 
 // Example card instances
 List<CardModel> cardRarityList = [
@@ -38,6 +39,7 @@ List<CardModel> cardRarityList = [
     currencyValue: 10,
     currencyMultiplier: 2,
     cardColor: Colors.black,
+    imagePath: 'assets/cardbackgrounds/Common.png',
   ),
   CardModel(
     rarity: 'Normal',
@@ -47,6 +49,7 @@ List<CardModel> cardRarityList = [
     currencyValue: 20,
     currencyMultiplier: 3,
     cardColor: Colors.green,
+    imagePath: 'assets/cardbackgrounds/Normal.jpg',
   ),
   CardModel(
     rarity: 'Rare',
@@ -56,6 +59,7 @@ List<CardModel> cardRarityList = [
     currencyValue: 50,
     currencyMultiplier: 5,
     cardColor: Colors.blue,
+    imagePath: 'assets/cardbackgrounds/Rare.jpg',
   ),
   CardModel(
     rarity: 'Epic',
@@ -65,6 +69,7 @@ List<CardModel> cardRarityList = [
     currencyValue: 100,
     currencyMultiplier: 7,
     cardColor: Colors.purple,
+    imagePath: 'assets/cardbackgrounds/Epic.jpg',
   ),
   CardModel(
     rarity: 'Super Rare',
@@ -74,6 +79,7 @@ List<CardModel> cardRarityList = [
     currencyValue: 200,
     currencyMultiplier: 10,
     cardColor: Colors.orange,
+    imagePath: 'assets/cardbackgrounds/SuperRare.jpg',
   ),
   CardModel(
     rarity: 'Ultra Rare',
@@ -83,6 +89,7 @@ List<CardModel> cardRarityList = [
     currencyValue: 500,
     currencyMultiplier: 13,
     cardColor: Colors.yellow,
+    imagePath: 'assets/cardbackgrounds/UltraRare.jpg',
   ),
   CardModel(
     rarity: 'Ultimate',
@@ -92,6 +99,7 @@ List<CardModel> cardRarityList = [
     currencyValue: 1000,
     currencyMultiplier: 17,
     cardColor: Colors.deepPurple,
+    imagePath: 'assets/cardbackgrounds/Ultimate.jpg',
   ),
   CardModel(
     rarity: 'Secret Rarity',
@@ -101,6 +109,7 @@ List<CardModel> cardRarityList = [
     currencyValue: 5000,
     currencyMultiplier: 20,
     cardColor: Colors.red,
+    imagePath: 'assets/cardbackgrounds/SecretRarity.jpg',
   ),
   CardModel(
     rarity: 'Godly',
@@ -109,6 +118,7 @@ List<CardModel> cardRarityList = [
     equipQuantity: 5,
     currencyValue: 10000,
     currencyMultiplier: 50,
-    cardColor: Colors.redAccent, // Close to a "rainbow" or vibrant crimson red
+    cardColor: Colors.redAccent,
+    imagePath: 'assets/cardbackgrounds/Godly.jpg',
   ),
 ];
