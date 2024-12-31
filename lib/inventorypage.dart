@@ -46,20 +46,26 @@ class _InventoryPageState extends State<InventoryPage> {
   }
 
   // Sell a selected card
-  void _sellCard(String cardRarity) {
-    final card = cardRarityList.firstWhere((card) => card.rarity == cardRarity);
-    final currencyProvider = Provider.of<CurrencyProvider>(context, listen: false);
+  // Sell a selected card
+    void _sellCard(String cardRarity) {
+      final card = cardRarityList.firstWhere((card) => card.rarity == cardRarity);
+      final currencyProvider = Provider.of<CurrencyProvider>(context, listen: false);
 
-    if (cardQuantities[cardRarity]! > 0) {
-      setState(() {
-        cardQuantities[cardRarity] = cardQuantities[cardRarity]! - 1;
-        summonedCards.remove(cardRarity);
-      });
+      if (cardQuantities[cardRarity]! > 0) {
+        setState(() {
+          cardQuantities[cardRarity] = cardQuantities[cardRarity]! - 1;
+          summonedCards.remove(cardRarity);
 
-      currencyProvider.increaseCurrency(card.cost);
-      _saveData();
+          // Remove the card from quantities if none are left
+          if (cardQuantities[cardRarity]! <= 0) {
+            cardQuantities.remove(cardRarity);
+          }
+        });
+
+        currencyProvider.increaseCurrency(card.cost);
+        _saveData(); // Save updated summonedCards list
+      }
     }
-  }
 
   // Toggle the equipment status of a card
   void _toggleEquipCard(String cardRarity) {
@@ -91,7 +97,8 @@ class _InventoryPageState extends State<InventoryPage> {
   
 
   // Function to show a dialog when selling a card
-  void _showSellDialog(String cardRarity) {
+// Function to show a dialog when selling a card
+void _showSellDialog(String cardRarity) {
   final card = cardRarityList.firstWhere((card) => card.rarity == cardRarity);
   final currencyProvider = Provider.of<CurrencyProvider>(context, listen: false);
   final totalAmount = card.cost * cardQuantities[cardRarity]!;
@@ -136,9 +143,6 @@ class _InventoryPageState extends State<InventoryPage> {
                     onPressed: () {
                       final amountToSell = int.tryParse(amountController.text);
                       if (amountToSell != null && amountToSell > 0) {
-                        final sellingPrice = card.cost * amountToSell;
-                        currencyProvider.increaseCurrency(sellingPrice);
-
                         setState(() {
                           // Update card quantity
                           cardQuantities[cardRarity] = cardQuantities[cardRarity]! - amountToSell;
@@ -153,6 +157,9 @@ class _InventoryPageState extends State<InventoryPage> {
                             cardQuantities.remove(cardRarity);
                           }
                         });
+
+                        // Update currency and save data
+                        currencyProvider.increaseCurrency(card.cost * amountToSell);
                         _saveData();
                         Navigator.pop(context);
                       }
@@ -161,10 +168,9 @@ class _InventoryPageState extends State<InventoryPage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      currencyProvider.increaseCurrency(totalAmount);
                       setState(() {
                         // Sell all of the cards
-                        currencyProvider.increaseCurrency(card.cost * cardQuantities[cardRarity]!);
+                        currencyProvider.increaseCurrency(totalAmount);
                         summonedCards.removeWhere((element) => element == cardRarity);
                         cardQuantities.remove(cardRarity); // Remove the card completely
                       });
@@ -183,6 +189,7 @@ class _InventoryPageState extends State<InventoryPage> {
     },
   );
 }
+
 
 
 

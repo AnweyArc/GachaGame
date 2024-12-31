@@ -6,7 +6,6 @@ import 'inventorypage.dart'; // Import the InventoryPage
 import 'package:shared_preferences/shared_preferences.dart';
 import 'cards.dart';
 
-
 class SummonPage extends StatefulWidget {
   @override
   _SummonPageState createState() => _SummonPageState();
@@ -27,13 +26,13 @@ class _SummonPageState extends State<SummonPage> {
 
   final Map<String, double> rarityChances = {
     'Common': 50.0,
-    'Normal': 25.0,
-    'Rare': 12.0,
-    'Epic': 6.0,
-    'Super Rare': 4.0,
-    'Ultra Rare': 2.0,
-    'Ultimate': 0.008,
-    'Secret Rarity': 0.002,
+    'Normal': 20.0,
+    'Rare': 10.0,
+    'Epic': 5.0,
+    'Super Rare': 1.0,
+    'Ultra Rare': 0.002,
+    'Ultimate': 0.0008,
+    'Secret Rarity': 0.0002,
     'Godly': 0.000001
   };
 
@@ -72,7 +71,7 @@ class _SummonPageState extends State<SummonPage> {
   }
 
   void _performSummon(int count, CurrencyProvider currencyProvider) {
-    int summonCost = 15 * count; // 15 per summon
+    int summonCost = 25 * count; // 25 per summon
     if (currencyProvider.currency >= summonCost) {
       setState(() {
         for (int i = 0; i < count; i++) {
@@ -126,15 +125,15 @@ class _SummonPageState extends State<SummonPage> {
             children: [
               ElevatedButton(
                 onPressed: () => _performSummon(1, currencyProvider),
-                child: Text('Summon x1 (15 Currency)'),
+                child: Text('Summon x1 (25 Currency)'),
               ),
               ElevatedButton(
                 onPressed: () => _performSummon(5, currencyProvider),
-                child: Text('Summon x5 (75 Currency)'),
+                child: Text('Summon x5 (125 Currency)'),
               ),
               ElevatedButton(
                 onPressed: () => _performSummon(10, currencyProvider),
-                child: Text('Summon x10 (150 Currency)'),
+                child: Text('Summon x10 (250 Currency)'),
               ),
             ],
           ),
@@ -145,7 +144,10 @@ class _SummonPageState extends State<SummonPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => InventoryPage()),
-              );
+              ).then((_) {
+                // Reload summoned cards after returning from inventory
+                _loadSummonedCards();
+              });
             },
             child: Text('View Inventory'),
           ),
