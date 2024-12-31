@@ -21,7 +21,6 @@ class _InventoryPageState extends State<InventoryPage> {
     _loadSummonedCards();
   }
 
-  // Load summoned cards from SharedPreferences
   Future<void> _loadSummonedCards() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -30,7 +29,6 @@ class _InventoryPageState extends State<InventoryPage> {
     });
   }
 
-  // Calculate card quantities
   Map<String, int> _calculateCardQuantities(List<String> cards) {
     Map<String, int> quantities = {};
     for (var card in cards) {
@@ -39,13 +37,11 @@ class _InventoryPageState extends State<InventoryPage> {
     return quantities;
   }
 
-  // Save summoned cards to SharedPreferences
   Future<void> _saveData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('summonedCards', summonedCards);
   }
 
-  // Sell a card and add its cost to currency
   void _sellCard(String cardRarity) {
     final card = cardRarityList.firstWhere((card) => card.rarity == cardRarity);
     final currencyProvider = Provider.of<CurrencyProvider>(context, listen: false);
@@ -61,18 +57,15 @@ class _InventoryPageState extends State<InventoryPage> {
     }
   }
 
-  // Toggle equip/unequip card
   void _toggleEquipCard(String cardRarity) {
     final card = cardRarityList.firstWhere((card) => card.rarity == cardRarity);
     final currencyProvider = Provider.of<CurrencyProvider>(context, listen: false);
 
     setState(() {
       if (equippedCards.contains(cardRarity)) {
-        // Unequip the card
         equippedCards.remove(cardRarity);
         currencyProvider.unequipCard(card);
       } else if (cardQuantities[cardRarity]! >= card.equipQuantity) {
-        // Equip the card
         equippedCards.add(cardRarity);
         currencyProvider.equipCard(card);
       }
@@ -100,7 +93,14 @@ class _InventoryPageState extends State<InventoryPage> {
           Expanded(
             child: sortedGroupedCards.isEmpty
                 ? Center(child: Text('No cards in inventory.'))
-                : ListView.builder(
+                : GridView.builder(
+                    padding: const EdgeInsets.all(10),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3, // 3 columns per row
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 0.7, // Adjust for the card proportions
+                    ),
                     itemCount: sortedGroupedCards.length,
                     itemBuilder: (context, index) {
                       var rarity = sortedGroupedCards[index].key;
@@ -108,39 +108,45 @@ class _InventoryPageState extends State<InventoryPage> {
                       var card = cardRarityList.firstWhere((card) => card.rarity == rarity);
 
                       return Card(
-                        color: card.cardColor.withOpacity(0.2), // Light background using card color
-                        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                        child: ListTile(
-                          title: Text(
-                            '$rarity x $count',
-                            style: TextStyle(color: card.cardColor, fontWeight: FontWeight.bold), // Text color matches the card color
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Cost: ${card.cost}'),
-                              Text('Equip Requirement: ${card.equipQuantity}'),
-                              Text('Currency Multiplier: ${card.currencyMultiplier}x'),
-                            ],
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              TextButton(
-                                onPressed: () => _sellCard(rarity),
-                                child: Text('Sell', style: TextStyle(color: card.cardColor)),
+                        color: card.cardColor.withOpacity(0.2),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '$rarity x $count',
+                              style: TextStyle(
+                                color: card.cardColor,
+                                fontWeight: FontWeight.bold,
                               ),
-                              TextButton(
-                                onPressed: cardQuantities[rarity]! >= card.equipQuantity || equippedCards.contains(rarity)
-                                    ? () => _toggleEquipCard(rarity)
-                                    : null,
-                                child: Text(
-                                  equippedCards.contains(rarity) ? 'Unequip' : 'Equip',
-                                  style: TextStyle(color: card.cardColor),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 10),
+                            Text('Cost: ${card.cost}'),
+                            Text('Equip: ${card.equipQuantity}'),
+                            Text('Multiplier: ${card.currencyMultiplier}x'),
+                            SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                TextButton(
+                                  onPressed: () => _sellCard(rarity),
+                                  child: Text(
+                                    'Sell',
+                                    style: TextStyle(color: card.cardColor),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                                TextButton(
+                                  onPressed: cardQuantities[rarity]! >= card.equipQuantity || equippedCards.contains(rarity)
+                                      ? () => _toggleEquipCard(rarity)
+                                      : null,
+                                  child: Text(
+                                    equippedCards.contains(rarity) ? 'Unequip' : 'Equip',
+                                    style: TextStyle(color: card.cardColor),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       );
                     },
