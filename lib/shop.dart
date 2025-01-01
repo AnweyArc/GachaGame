@@ -2,8 +2,81 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'currency_provider.dart'; // Import the CurrencyProvider
 import 'shopinfo.dart'; // Import the ShopInfo
+import 'package:shared_preferences/shared_preferences.dart'; // Import shared preferences
 
-class ShopPage extends StatelessWidget {
+class ShopPage extends StatefulWidget {
+  @override
+  _ShopPageState createState() => _ShopPageState();
+}
+
+class _ShopPageState extends State<ShopPage> {
+  // List to keep track of owned items
+  late List<bool> ownedItems;
+  // List to keep track of equipped items
+  late List<bool> equippedItems;
+  late bool isAutoClickerActive;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOwnedAndEquippedItems();
+    isAutoClickerActive = false;
+  }
+
+  // Load the state of owned and equipped items from shared preferences
+  _loadOwnedAndEquippedItems() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<bool> owned = List.generate(ShopInfo.items.length, (index) {
+      return prefs.getBool('item_${index}_owned') ?? false; // Default to false if not set
+    });
+    List<bool> equipped = List.generate(ShopInfo.items.length, (index) {
+      return prefs.getBool('item_${index}_equipped') ?? false; // Default to false if not set
+    });
+
+    setState(() {
+      ownedItems = owned;
+      equippedItems = equipped;
+      // If AutoClicker is equipped, start its effect
+      if (equippedItems[0]) {
+        isAutoClickerActive = true;
+        ShopInfo.autoClickerFunction(() {
+          // Callback to generate currency if AutoClicker is active
+          Provider.of<CurrencyProvider>(context, listen: false).increaseCurrency(10);
+        });
+      }
+    });
+  }
+
+  // Save the state of owned items
+  _saveOwnedItem(int index, bool isOwned) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('item_${index}_owned', isOwned);
+  }
+
+  // Save the state of equipped items
+  _saveEquippedItem(int index, bool isEquipped) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('item_${index}_equipped', isEquipped);
+  }
+
+  // Function to start or stop the AutoClicker when equipped
+  _toggleAutoClicker(int index, CurrencyProvider currencyProvider) {
+    setState(() {
+      if (equippedItems[index] && !isAutoClickerActive) {
+        // Start AutoClicker if it's equipped and not already active
+        ShopInfo.autoClickerFunction(() {
+          // Callback to generate currency
+          currencyProvider.increaseCurrency(10); // Adjust the increment as per your need
+        });
+        isAutoClickerActive = true;
+      } else {
+        // Stop AutoClicker if it's equipped and already active
+        ShopInfo.stopAutoClicker();
+        isAutoClickerActive = false;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final currencyProvider = Provider.of<CurrencyProvider>(context);
@@ -28,7 +101,7 @@ class ShopPage extends StatelessWidget {
               itemCount: ShopInfo.items.length, // Fetch item count from ShopInfo
               itemBuilder: (context, index) {
                 final item = ShopInfo.items[index];
-                return shopItem(item, currencyProvider);
+                return shopItem(item, currencyProvider, index);
               },
             ),
           ),
@@ -37,7 +110,7 @@ class ShopPage extends StatelessWidget {
     );
   }
 
-  Widget shopItem(ShopItem item, CurrencyProvider currencyProvider) {
+  Widget shopItem(ShopItem item, CurrencyProvider currencyProvider, int index) {
     return ListTile(
       title: Text(item.itemName),
       subtitle: Column(
@@ -50,21 +123,34 @@ class ShopPage extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Buy button
           ElevatedButton(
-            onPressed: currencyProvider.currency >= item.itemPrice
+            onPressed: currencyProvider.currency >= item.itemPrice &&
+                    !ownedItems[index]
                 ? () {
+                    // Buy the item
                     currencyProvider.decreaseCurrency(item.itemPrice);
-                    // Add functionality to "buy" the item here
+                    setState(() {
+                      ownedItems[index] = true; // Mark item as owned
+                    });
+                    _saveOwnedItem(index, true); // Save state to shared preferences
                   }
-                : null, // Disable the button if not enough currency
-            child: Text('Buy'),
+                : null, // Disable button if not enough currency or already owned
+            child: Text(ownedItems[index] ? 'Owned' : 'Buy'),
           ),
           SizedBox(width: 10),
+          // Equip/Unequip button
           ElevatedButton(
-            onPressed: () {
-              // Add equip functionality here
-            },
-            child: Text('Equip'),
+            onPressed: ownedItems[index]
+                ? () {
+                    setState(() {
+                      equippedItems[index] = !equippedItems[index]; // Toggle equip state
+                      _toggleAutoClicker(index, currencyProvider); // Start/Stop AutoClicker
+                    });
+                    _saveEquippedItem(index, equippedItems[index]); // Save state to shared preferences
+                  }
+                : null, // Disable button if not owned
+            child: Text(equippedItems[index] ? 'Equipped' : 'Equip'),
           ),
         ],
       ),
