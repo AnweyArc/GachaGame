@@ -149,32 +149,88 @@ class _SummonPageState extends State<SummonPage> {
             style: TextStyle(fontSize: 18),
           ),
           SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          Wrap(
+            spacing: 10, // Spacing between buttons
+            runSpacing: 10, // Spacing for rows if buttons wrap
             children: [
-              ElevatedButton(
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  side: BorderSide(color: Colors.blue, width: 2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
                 onPressed: () => _performSummon(1, currencyProvider),
-                child: Text('Summon x1 (25 Currency)'),
+                child: Column(
+                  children: [
+                    Text(
+                      'Summon x1',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Text('(25 Currency)', style: TextStyle(fontSize: 12)),
+                  ],
+                ),
               ),
-              ElevatedButton(
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  side: BorderSide(color: Colors.blue, width: 2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
                 onPressed: () => _performSummon(5, currencyProvider),
-                child: Text('Summon x5 (125 Currency)'),
+                child: Column(
+                  children: [
+                    Text(
+                      'Summon x5',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Text('(125 Currency)', style: TextStyle(fontSize: 12)),
+                  ],
+                ),
               ),
-              ElevatedButton(
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  side: BorderSide(color: Colors.blue, width: 2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
                 onPressed: () => _performSummon(10, currencyProvider),
-                child: Text('Summon x10 (250 Currency)'),
+                child: Column(
+                  children: [
+                    Text(
+                      'Summon x10',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Text('(250 Currency)', style: TextStyle(fontSize: 12)),
+                  ],
+                ),
               ),
             ],
           ),
           SizedBox(height: 20),
-          ElevatedButton(
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+              side: BorderSide(color: Colors.blue, width: 2),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => InventoryPage()),
               ).then((_) => _loadSummonedCards());
             },
-            child: Text('View Inventory'),
+            child: Text(
+              'View Inventory',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
           ),
           SizedBox(height: 20),
           Text(
@@ -188,7 +244,7 @@ class _SummonPageState extends State<SummonPage> {
                   height: 200,
                   child: GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5,
+                      crossAxisCount: 2,
                       crossAxisSpacing: 8,
                       mainAxisSpacing: 8,
                     ),
