@@ -36,6 +36,13 @@ class _SummonPageState extends State<SummonPage> {
     'Godly': 0.0000002,
   };
 
+  final Map<String, double> mysticRarityChances = {
+    'Ultra Rare': 20.0,
+    'Ultimate': 15.0,
+    'Secret Rarity': 10.0,
+    'Godly': 1.0,
+  };
+
   List<String> summonedCards = [];
 
   @override
@@ -56,18 +63,62 @@ class _SummonPageState extends State<SummonPage> {
     await prefs.setStringList('summonedCards', summonedCards);
   }
 
-  String _summonCard() {
+  String _summonCard({bool isMystic = false}) {
     double randomValue = Random().nextDouble() * 100;
     double cumulative = 0.0;
 
-    for (var rarity in rarities) {
-      cumulative += rarityChances[rarity]!;
+    Map<String, double> chances = isMystic ? mysticRarityChances : rarityChances;
+
+    for (var rarity in chances.keys) {
+      cumulative += chances[rarity]!;
 
       if (randomValue <= cumulative) {
         return rarity;
       }
     }
     return 'Common';
+  }
+
+  Future<void> _performMysticSummon(CurrencyProvider currencyProvider) async {
+    int summonCost = 100000;
+
+    if (currencyProvider.currency >= summonCost) {
+      setState(() {
+        String summonedCard = _summonCard(isMystic: true);
+        summonedCards.add(summonedCard);
+        currencyProvider.decreaseCurrency(summonCost);
+      });
+      _saveSummonedCards();
+
+      // Flash effect and display summoned card
+      await _showFlashEffect();
+      String summonedCard = summonedCards.last;
+      _showCardDetails(summonedCard);
+    } else {
+      _showNotEnoughCurrencyMessage();
+    }
+  }
+
+  Future<void> _showFlashEffect() async {
+    OverlayEntry overlayEntry = OverlayEntry(
+      builder: (context) => Container(
+        color: Colors.white,
+        child: Center(
+          child: Text(
+            "Mystic Summon!",
+            style: TextStyle(
+              fontSize: 36,
+              fontWeight: FontWeight.bold,
+              color: Colors.orange,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context)?.insert(overlayEntry);
+    await Future.delayed(Duration(seconds: 1));
+    overlayEntry.remove();
   }
 
   void _performSummon(int count, CurrencyProvider currencyProvider) {
@@ -152,8 +203,8 @@ class _SummonPageState extends State<SummonPage> {
             ),
             SizedBox(height: 20),
             Wrap(
-              spacing: 10, // Spacing between buttons
-              runSpacing: 10, // Spacing for rows if buttons wrap
+              spacing: 10,
+              runSpacing: 10,
               children: [
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
@@ -192,8 +243,7 @@ class _SummonPageState extends State<SummonPage> {
                       Text('(125 Currency)', style: TextStyle(fontSize: 12)),
                     ],
                   ),
-                ),
-                OutlinedButton(
+                ),OutlinedButton(
                   style: OutlinedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                     side: BorderSide(color: Colors.blue, width: 2),
@@ -211,8 +261,7 @@ class _SummonPageState extends State<SummonPage> {
                       Text('(250 Currency)', style: TextStyle(fontSize: 12)),
                     ],
                   ),
-                ),
-                // New Summon x50 button
+                ),// New Summon x50 button
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
@@ -231,8 +280,7 @@ class _SummonPageState extends State<SummonPage> {
                       Text('(1250 Currency)', style: TextStyle(fontSize: 12)),
                     ],
                   ),
-                ),
-                // New Summon x100 button
+                ),// New Summon x100 button
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
@@ -249,6 +297,34 @@ class _SummonPageState extends State<SummonPage> {
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       Text('(2500 Currency)', style: TextStyle(fontSize: 12)),
+                    ],
+                  ),
+                ),
+                // Mystic Summon Button
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    side: BorderSide(color: Colors.orange, width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () => _performMysticSummon(currencyProvider),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Mystic Summon',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        '(100,000 Currency)',
+                        style: TextStyle(fontSize: 12, color: Colors.white70),
+                      ),
                     ],
                   ),
                 ),
