@@ -55,6 +55,30 @@ class _InventoryPageState extends State<InventoryPage> {
     await prefs.setStringList('equippedCards', equippedCards.toList()); // Save equipped cards
   }
 
+  // Show the full card image in a dialog
+  void _showFullImage(String cardRarity) {
+    final card = cardRarityList.firstWhere((card) => card.rarity == cardRarity);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: GestureDetector(
+            onTap: () => Navigator.of(context).pop(), // Close the dialog when tapped
+            child: Center(
+              child: Image.asset(
+                card.imagePath,
+                fit: BoxFit.cover,
+                height: MediaQuery.of(context).size.height * 0.7, // Set the height to 70% of screen height
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   // Sell a selected card
   void _sellCard(String cardRarity) {
     final card = cardRarityList.firstWhere((card) => card.rarity == cardRarity);
@@ -255,54 +279,57 @@ class _InventoryPageState extends State<InventoryPage> {
                       var count = sortedGroupedCards[index].value.length;
                       var card = cardRarityList.firstWhere((card) => card.rarity == rarity);
 
-                      return Card(
-                        color: card.cardColor.withOpacity(0.2),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Image.asset(
-                                card.imagePath, // Load card image
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              '$rarity x $count',
-                              style: TextStyle(
-                                color: card.cardColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: getFontSize(),
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 10),
-                            Text('Cost: ${card.cost}', style: TextStyle(fontSize: getFontSize())),
-                            Text('Quantity to Equip: ${card.equipQuantity}', style: TextStyle(fontSize: getFontSize())),
-                            Text('Multiplier: ${card.currencyMultiplier}x', style: TextStyle(fontSize: getFontSize())),
-                            SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                TextButton(
-                                  onPressed: () => _showSellDialog(rarity),
-                                  child: Text(
-                                    'Sell',
-                                    style: TextStyle(color: card.cardColor, fontSize: getFontSize()),
-                                  ),
+                      return GestureDetector(
+                        onTap: () => _showFullImage(rarity), // Show full image on tap
+                        child: Card(
+                          color: card.cardColor.withOpacity(0.2),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Image.asset(
+                                  card.imagePath, // Load card image
+                                  fit: BoxFit.cover,
                                 ),
-                                TextButton(
-                                  onPressed: cardQuantities[rarity]! >= card.equipQuantity || equippedCards.contains(rarity)
-                                      ? () => _toggleEquipCard(rarity)
-                                      : null,
-                                  child: Text(
-                                    equippedCards.contains(rarity) ? 'Equipped' : 'Equip',
-                                    style: TextStyle(color: card.cardColor, fontSize: getFontSize()),
-                                  ),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                '$rarity x $count',
+                                style: TextStyle(
+                                  color: card.cardColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: getFontSize(),
                                 ),
-                              ],
-                            ),
-                          ],
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 10),
+                              Text('Cost: ${card.cost}', style: TextStyle(fontSize: getFontSize())),
+                              Text('Quantity to Equip: ${card.equipQuantity}', style: TextStyle(fontSize: getFontSize())),
+                              Text('Multiplier: ${card.currencyMultiplier}x', style: TextStyle(fontSize: getFontSize())),
+                              SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  TextButton(
+                                    onPressed: () => _showSellDialog(rarity),
+                                    child: Text(
+                                      'Sell',
+                                      style: TextStyle(color: card.cardColor, fontSize: getFontSize()),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: cardQuantities[rarity]! >= card.equipQuantity || equippedCards.contains(rarity)
+                                        ? () => _toggleEquipCard(rarity)
+                                        : null,
+                                    child: Text(
+                                      equippedCards.contains(rarity) ? 'Equipped' : 'Equip',
+                                      style: TextStyle(color: card.cardColor, fontSize: getFontSize()),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },

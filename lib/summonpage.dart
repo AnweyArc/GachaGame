@@ -62,6 +62,7 @@ class _SummonPageState extends State<SummonPage> {
 
     for (var rarity in rarities) {
       cumulative += rarityChances[rarity]!;
+
       if (randomValue <= cumulative) {
         return rarity;
       }
@@ -136,186 +137,188 @@ class _SummonPageState extends State<SummonPage> {
       appBar: AppBar(
         title: Text('Summon Cards'),
       ),
-      body: Column(
-        children: [
-          SizedBox(height: 20),
-          Text(
-            'Currency: ${currencyProvider.currency}',
-            style: TextStyle(fontSize: 18),
-          ),
-          SizedBox(height: 20),
-          Text(
-            'Summon your cards!',
-            style: TextStyle(fontSize: 18),
-          ),
-          SizedBox(height: 20),
-          Wrap(
-            spacing: 10, // Spacing between buttons
-            runSpacing: 10, // Spacing for rows if buttons wrap
-            children: [
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                  side: BorderSide(color: Colors.blue, width: 2),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            Text(
+              'Currency: ${currencyProvider.currency}',
+              style: TextStyle(fontSize: 18),
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Summon your cards!',
+              style: TextStyle(fontSize: 18),
+            ),
+            SizedBox(height: 20),
+            Wrap(
+              spacing: 10, // Spacing between buttons
+              runSpacing: 10, // Spacing for rows if buttons wrap
+              children: [
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    side: BorderSide(color: Colors.blue, width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () => _performSummon(1, currencyProvider),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Summon x1',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      Text('(25 Currency)', style: TextStyle(fontSize: 12)),
+                    ],
                   ),
                 ),
-                onPressed: () => _performSummon(1, currencyProvider),
-                child: Column(
-                  children: [
-                    Text(
-                      'Summon x1',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    side: BorderSide(color: Colors.blue, width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    Text('(25 Currency)', style: TextStyle(fontSize: 12)),
-                  ],
-                ),
-              ),
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                  side: BorderSide(color: Colors.blue, width: 2),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  onPressed: () => _performSummon(5, currencyProvider),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Summon x5',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      Text('(125 Currency)', style: TextStyle(fontSize: 12)),
+                    ],
                   ),
                 ),
-                onPressed: () => _performSummon(5, currencyProvider),
-                child: Column(
-                  children: [
-                    Text(
-                      'Summon x5',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    side: BorderSide(color: Colors.blue, width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    Text('(125 Currency)', style: TextStyle(fontSize: 12)),
-                  ],
-                ),
-              ),
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                  side: BorderSide(color: Colors.blue, width: 2),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  onPressed: () => _performSummon(10, currencyProvider),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Summon x10',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      Text('(250 Currency)', style: TextStyle(fontSize: 12)),
+                    ],
                   ),
                 ),
-                onPressed: () => _performSummon(10, currencyProvider),
-                child: Column(
-                  children: [
-                    Text(
-                      'Summon x10',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                // New Summon x50 button
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    side: BorderSide(color: Colors.blue, width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    Text('(250 Currency)', style: TextStyle(fontSize: 12)),
-                  ],
-                ),
-              ),
-              // New Summon x50 button
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                  side: BorderSide(color: Colors.blue, width: 2),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  onPressed: () => _performSummon(50, currencyProvider),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Summon x50',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      Text('(1250 Currency)', style: TextStyle(fontSize: 12)),
+                    ],
                   ),
                 ),
-                onPressed: () => _performSummon(50, currencyProvider),
-                child: Column(
-                  children: [
-                    Text(
-                      'Summon x50',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                // New Summon x100 button
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    side: BorderSide(color: Colors.blue, width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    Text('(1250 Currency)', style: TextStyle(fontSize: 12)),
-                  ],
-                ),
-              ),
-              // New Summon x100 button
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                  side: BorderSide(color: Colors.blue, width: 2),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  onPressed: () => _performSummon(100, currencyProvider),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Summon x100',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      Text('(2500 Currency)', style: TextStyle(fontSize: 12)),
+                    ],
                   ),
                 ),
-                onPressed: () => _performSummon(100, currencyProvider),
-                child: Column(
-                  children: [
-                    Text(
-                      'Summon x100',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    Text('(2500 Currency)', style: TextStyle(fontSize: 12)),
-                  ],
+              ],
+            ),
+            SizedBox(height: 20),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                side: BorderSide(color: Colors.blue, width: 2),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
-            ],
-          ),
-          SizedBox(height: 20),
-          OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-              side: BorderSide(color: Colors.blue, width: 2),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => InventoryPage()),
+                ).then((_) => _loadSummonedCards());
+              },
+              child: Text(
+                'View Inventory',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => InventoryPage()),
-              ).then((_) => _loadSummonedCards());
-            },
-            child: Text(
-              'View Inventory',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            SizedBox(height: 20),
+            Text(
+              'Recently Summoned Cards:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-          ),
-          SizedBox(height: 20),
-          Text(
-            'Recently Summoned Cards:',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 10),
-          summonedCards.isEmpty
-              ? Text('No cards summoned yet.')
-              : Container(
-                  height: 200,
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
+            SizedBox(height: 10),
+            summonedCards.isEmpty
+                ? Text('No cards summoned yet.')
+                : Container(
+                    height: 200,
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 8,
+                        mainAxisSpacing: 8,
+                      ),
+                      itemCount: summonedCards.take(10).length,
+                      itemBuilder: (context, index) {
+                        String rarity = summonedCards[summonedCards.length - 1 - index];
+                        return GestureDetector(
+                          onTap: () => _showCardDetails(rarity),
+                          child: Image.asset(
+                            cardRarityList
+                                .firstWhere(
+                                  (card) => card.rarity == rarity,
+                                  orElse: () => CardModel(
+                                    rarity: 'Unknown',
+                                    cost: 0,
+                                    luckValue: 0,
+                                    equipQuantity: 0,
+                                    currencyValue: 0,
+                                    currencyMultiplier: 0,
+                                    cardColor: Colors.grey,
+                                    imagePath: 'assets/cardbackgrounds/default.png',
+                                  ),
+                                )
+                                .imagePath,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      },
                     ),
-                    itemCount: summonedCards.take(10).length,
-                    itemBuilder: (context, index) {
-                      String rarity = summonedCards[summonedCards.length - 1 - index];
-                      return GestureDetector(
-                        onTap: () => _showCardDetails(rarity),
-                        child: Image.asset(
-                          cardRarityList
-                              .firstWhere(
-                                (card) => card.rarity == rarity,
-                                orElse: () => CardModel(
-                                  rarity: 'Unknown',
-                                  cost: 0,
-                                  luckValue: 0,
-                                  equipQuantity: 0,
-                                  currencyValue: 0,
-                                  currencyMultiplier: 0,
-                                  cardColor: Colors.grey,
-                                  imagePath: 'assets/cardbackgrounds/default.png',
-                                ),
-                              )
-                              .imagePath,
-                          fit: BoxFit.cover,
-                        ),
-                      );
-                    },
                   ),
-                ),
-        ],
+          ],
+        ),
       ),
     );
   }
