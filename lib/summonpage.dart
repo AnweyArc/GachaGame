@@ -210,6 +210,46 @@ class _SummonPageState extends State<SummonPage> {
                   ],
                 ),
               ),
+              // New Summon x50 button
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  side: BorderSide(color: Colors.blue, width: 2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () => _performSummon(50, currencyProvider),
+                child: Column(
+                  children: [
+                    Text(
+                      'Summon x50',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Text('(1250 Currency)', style: TextStyle(fontSize: 12)),
+                  ],
+                ),
+              ),
+              // New Summon x100 button
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  side: BorderSide(color: Colors.blue, width: 2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () => _performSummon(100, currencyProvider),
+                child: Column(
+                  children: [
+                    Text(
+                      'Summon x100',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    Text('(2500 Currency)', style: TextStyle(fontSize: 12)),
+                  ],
+                ),
+              ),
             ],
           ),
           SizedBox(height: 20),
