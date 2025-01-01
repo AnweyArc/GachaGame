@@ -39,7 +39,7 @@ List<CardModel> cardRarityList = [
     currencyValue: 10,
     currencyMultiplier: 2,
     cardColor: Colors.black,
-    imagePath: 'assets/cardbackgrounds/Common.png',
+    imagePath: 'assets/cardbackgrounds/Common.jpg',
   ),
   CardModel(
     rarity: 'Normal',

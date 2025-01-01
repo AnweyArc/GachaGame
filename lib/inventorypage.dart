@@ -55,7 +55,7 @@ class _InventoryPageState extends State<InventoryPage> {
     await prefs.setStringList('equippedCards', equippedCards.toList()); // Save equipped cards
   }
 
-  // Show the full card image in a dialog
+  // Show the full card image in a dialog with a glow effect based on rarity color
   void _showFullImage(String cardRarity) {
     final card = cardRarityList.firstWhere((card) => card.rarity == cardRarity);
 
@@ -67,10 +67,21 @@ class _InventoryPageState extends State<InventoryPage> {
           child: GestureDetector(
             onTap: () => Navigator.of(context).pop(), // Close the dialog when tapped
             child: Center(
-              child: Image.asset(
-                card.imagePath,
-                fit: BoxFit.cover,
-                height: MediaQuery.of(context).size.height * 0.7, // Set the height to 70% of screen height
+              child: Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: card.cardColor.withOpacity(0.6),
+                      spreadRadius: 20,
+                      blurRadius: 25,
+                    ),
+                  ],
+                ),
+                child: Image.asset(
+                  card.imagePath,
+                  fit: BoxFit.cover,
+                  height: MediaQuery.of(context).size.height * 0.7, // Set the height to 70% of screen height
+                ),
               ),
             ),
           ),
