@@ -14,13 +14,11 @@ class _ShopPageState extends State<ShopPage> {
   late List<bool> ownedItems;
   // List to keep track of equipped items
   late List<bool> equippedItems;
-  late bool isAutoClickerActive;
 
   @override
   void initState() {
     super.initState();
     _loadOwnedAndEquippedItems();
-    isAutoClickerActive = false;
   }
 
   // Load the state of owned and equipped items from shared preferences
@@ -38,11 +36,7 @@ class _ShopPageState extends State<ShopPage> {
       equippedItems = equipped;
       // If AutoClicker is equipped, start its effect
       if (equippedItems[0]) {
-        isAutoClickerActive = true;
-        ShopInfo.autoClickerFunction(() {
-          // Callback to generate currency if AutoClicker is active
-          Provider.of<CurrencyProvider>(context, listen: false).increaseCurrency(10);
-        });
+        Provider.of<CurrencyProvider>(context, listen: false).startAutoClicker(10); // Start AutoClicker with 10 currency per second
       }
     });
   }
@@ -60,19 +54,15 @@ class _ShopPageState extends State<ShopPage> {
   }
 
   // Function to start or stop the AutoClicker when equipped
-  _toggleAutoClicker(int index, CurrencyProvider currencyProvider) {
+  _toggleAutoClicker(int index) {
+    final currencyProvider = Provider.of<CurrencyProvider>(context, listen: false);
     setState(() {
-      if (equippedItems[index] && !isAutoClickerActive) {
-        // Start AutoClicker if it's equipped and not already active
-        ShopInfo.autoClickerFunction(() {
-          // Callback to generate currency
-          currencyProvider.increaseCurrency(10); // Adjust the increment as per your need
-        });
-        isAutoClickerActive = true;
+      if (equippedItems[index]) {
+        // Start AutoClicker if it's equipped
+        currencyProvider.startAutoClicker(10); // Adjust the increment as per your need
       } else {
-        // Stop AutoClicker if it's equipped and already active
-        ShopInfo.stopAutoClicker();
-        isAutoClickerActive = false;
+        // Stop AutoClicker if it's not equipped
+        currencyProvider.stopAutoClicker();
       }
     });
   }
@@ -145,7 +135,7 @@ class _ShopPageState extends State<ShopPage> {
                 ? () {
                     setState(() {
                       equippedItems[index] = !equippedItems[index]; // Toggle equip state
-                      _toggleAutoClicker(index, currencyProvider); // Start/Stop AutoClicker
+                      _toggleAutoClicker(index); // Start/Stop AutoClicker
                     });
                     _saveEquippedItem(index, equippedItems[index]); // Save state to shared preferences
                   }

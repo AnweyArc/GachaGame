@@ -19,6 +19,7 @@ class _InventoryPageState extends State<InventoryPage> {
   void initState() {
     super.initState();
     _loadSummonedCards();
+    _loadEquippedCards();
   }
 
   // Load summoned cards and update quantities
@@ -27,6 +28,14 @@ class _InventoryPageState extends State<InventoryPage> {
     setState(() {
       summonedCards = prefs.getStringList('summonedCards') ?? [];
       cardQuantities = _calculateCardQuantities(summonedCards);
+    });
+  }
+
+  // Load equipped cards from SharedPreferences
+  Future<void> _loadEquippedCards() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      equippedCards = prefs.getStringList('equippedCards')?.toSet() ?? {};
     });
   }
 
@@ -43,6 +52,7 @@ class _InventoryPageState extends State<InventoryPage> {
   Future<void> _saveData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('summonedCards', summonedCards);
+    await prefs.setStringList('equippedCards', equippedCards.toList()); // Save equipped cards
   }
 
   // Sell a selected card
@@ -92,6 +102,8 @@ class _InventoryPageState extends State<InventoryPage> {
         }
       }
     });
+
+    _saveData(); // Save equipped cards after the change
   }
 
   // Function to show a dialog when selling a card
@@ -284,7 +296,7 @@ class _InventoryPageState extends State<InventoryPage> {
                                       ? () => _toggleEquipCard(rarity)
                                       : null,
                                   child: Text(
-                                    equippedCards.contains(rarity) ? 'Unequip' : 'Equip',
+                                    equippedCards.contains(rarity) ? 'Equipped' : 'Equip',
                                     style: TextStyle(color: card.cardColor, fontSize: getFontSize()),
                                   ),
                                 ),

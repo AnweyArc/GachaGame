@@ -19,7 +19,7 @@ class ShopInfo {
     ShopItem(
       itemName: 'AutoClicker',
       itemPrice: 100000,
-      itemDescription: 'Automatically clicks for you',
+      itemDescription: 'Automatically generates 10 currency per second multiplied by the equipped card',
     ),
     ShopItem(
       itemName: 'Hold Clicker',
