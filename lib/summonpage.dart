@@ -25,15 +25,15 @@ class _SummonPageState extends State<SummonPage> {
   ];
 
   final Map<String, double> rarityChances = {
-    'Common': 50.0,
-    'Normal': 20.0,
-    'Rare': 10.0,
-    'Epic': 5.0,
+    'Common': 45.0,
+    'Normal': 18.0,
+    'Rare': 9.0,
+    'Epic': 4.0,
     'Super Rare': 1.0,
-    'Ultra Rare': 0.002,
-    'Ultimate': 0.0008,
-    'Secret Rarity': 0.0002,
-    'Godly': 0.000001,
+    'Ultra Rare': 0.003,
+    'Ultimate': 0.001,
+    'Secret Rarity': 0.0003,
+    'Godly': 0.0000002,
   };
 
   List<String> summonedCards = [];
