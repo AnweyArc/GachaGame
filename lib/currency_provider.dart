@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'cards.dart';
+import 'shopinfo.dart';
 
 class CurrencyProvider extends ChangeNotifier {
   int _currency = 0; // Currency should always be int

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'currency_provider.dart';
 import 'summonpage.dart'; // Import the summon page
+import 'shop.dart'; // Import the shop page
 
 class GamePage extends StatelessWidget {
   @override
@@ -75,6 +76,22 @@ class GamePage extends StatelessWidget {
                 );
               },
               child: Text('Summon'),
+            ),
+          ),
+          // Shop button at the bottom-right
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ShopPage(), // Navigate to the ShopPage
+                  ),
+                );
+              },
+              child: Text('Shop'),
             ),
           ),
         ],
