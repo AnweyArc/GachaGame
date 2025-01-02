@@ -9,16 +9,17 @@ class ShopPage extends StatefulWidget {
   _ShopPageState createState() => _ShopPageState();
 }
 
-class _ShopPageState extends State<ShopPage> {
-  // List to keep track of owned items
+class _ShopPageState extends State<ShopPage> with SingleTickerProviderStateMixin {
+  // TabController for tab navigation
+  late TabController _tabController;
   late List<bool> ownedItems;
-  // List to keep track of equipped items
   late List<bool> equippedItems;
 
   @override
   void initState() {
     super.initState();
     _loadOwnedAndEquippedItems();
+    _tabController = TabController(length: 2, vsync: this); // 2 tabs: Equippables and Upgrades
   }
 
   // Load the state of owned and equipped items from shared preferences
@@ -34,10 +35,6 @@ class _ShopPageState extends State<ShopPage> {
     setState(() {
       ownedItems = owned;
       equippedItems = equipped;
-      // If AutoClicker is equipped, start its effect
-      if (equippedItems[0]) {
-        Provider.of<CurrencyProvider>(context, listen: false).startAutoClicker(10); // Start AutoClicker with 10 currency per second
-      }
     });
   }
 
@@ -57,12 +54,21 @@ class _ShopPageState extends State<ShopPage> {
   _toggleAutoClicker(int index) {
     final currencyProvider = Provider.of<CurrencyProvider>(context, listen: false);
     setState(() {
+      // Ensure only one AutoClicker is equipped at a time
+      if (index == 0) {  // AutoClicker (index 0)
+        equippedItems[1] = false; // Unequip Faster AutoClicker
+      } else if (index == 1) {  // Faster AutoClicker (index 1)
+        equippedItems[0] = false; // Unequip AutoClicker
+      }
+      
+      equippedItems[index] = !equippedItems[index]; // Toggle equip state
+      _saveEquippedItem(index, equippedItems[index]); // Save state to shared preferences
+
+      // Handle starting or stopping the AutoClicker based on the equipped state
       if (equippedItems[index]) {
-        // Start AutoClicker if it's equipped
-        currencyProvider.startAutoClicker(10); // Adjust the increment as per your need
+        currencyProvider.startAutoClicker(index == 0 ? 10 : 20); // 10 for AutoClicker, 20 for Faster AutoClicker
       } else {
-        // Stop AutoClicker if it's not equipped
-        currencyProvider.stopAutoClicker();
+        currencyProvider.stopAutoClicker(); // Stop AutoClicker when unequipped
       }
     });
   }
@@ -74,32 +80,71 @@ class _ShopPageState extends State<ShopPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Shop'),
-      ),
-      body: Column(
-        children: [
-          // Display current currency at the top
+        actions: [
+          // Display the current currency in the app bar
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Current Currency: ${currencyProvider.currency}',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                // Display the currency image
+                Image.asset(
+                  'assets/currencies/GachapomCoin.png', 
+                  height: 30, // Adjust the size of the currency image
+                  width: 30,  // Adjust the size of the currency image
+                ),
+                SizedBox(width: 8), // Add some spacing between the image and the text
+                // Display the currency amount
+                Text(
+                  '${currencyProvider.currency}',
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+              ],
             ),
-          ),
-          // List of items in the shop
-          Expanded(
-            child: ListView.builder(
-              itemCount: ShopInfo.items.length, // Fetch item count from ShopInfo
-              itemBuilder: (context, index) {
-                final item = ShopInfo.items[index];
+          )
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(text: 'Equippables'),
+            Tab(text: 'Upgrades'),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          // Equippables Tab
+          ListView.builder(
+            itemCount: ShopInfo.items.length,
+            itemBuilder: (context, index) {
+              final item = ShopInfo.items[index];
+              // Only show equippables in this tab
+              if (item.category == 'Equippable') {
                 return shopItem(item, currencyProvider, index);
-              },
-            ),
+              }
+              return SizedBox.shrink(); // Empty space for non-equippable items
+            },
+          ),
+          // Upgrades Tab
+          ListView.builder(
+            itemCount: ShopInfo.items.length,
+            itemBuilder: (context, index) {
+              final item = ShopInfo.items[index];
+              // Only show upgrades in this tab
+              if (item.category == 'Upgrade') {
+                return upgradeItem(item, currencyProvider, index);
+              }
+              return SizedBox.shrink(); // Empty space for non-upgrade items
+            },
           ),
         ],
       ),
     );
   }
 
+  // Widget for displaying equippable items
   Widget shopItem(ShopItem item, CurrencyProvider currencyProvider, int index) {
     return ListTile(
       title: Text(item.itemName),
@@ -134,15 +179,41 @@ class _ShopPageState extends State<ShopPage> {
             onPressed: ownedItems[index]
                 ? () {
                     setState(() {
-                      equippedItems[index] = !equippedItems[index]; // Toggle equip state
-                      _toggleAutoClicker(index); // Start/Stop AutoClicker
+                      _toggleAutoClicker(index); // Toggle equip state for AutoClickers
                     });
-                    _saveEquippedItem(index, equippedItems[index]); // Save state to shared preferences
                   }
                 : null, // Disable button if not owned
             child: Text(equippedItems[index] ? 'Equipped' : 'Equip'),
           ),
         ],
+      ),
+    );
+  }
+
+  // Widget for displaying upgrade items (with "Buy" option only)
+  Widget upgradeItem(ShopItem item, CurrencyProvider currencyProvider, int index) {
+    return ListTile(
+      title: Text(item.itemName),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Price: \$${item.itemPrice}'),
+          Text('Description: ${item.itemDescription}'),
+        ],
+      ),
+      trailing: ElevatedButton(
+        onPressed: currencyProvider.currency >= item.itemPrice &&
+                !ownedItems[index]
+            ? () {
+                // Buy the upgrade item
+                currencyProvider.decreaseCurrency(item.itemPrice);
+                setState(() {
+                  ownedItems[index] = true; // Mark item as owned
+                });
+                _saveOwnedItem(index, true); // Save state to shared preferences
+              }
+            : null, // Disable button if not enough currency or already owned
+        child: Text(ownedItems[index] ? 'Owned' : 'Buy'),
       ),
     );
   }

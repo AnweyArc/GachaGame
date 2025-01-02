@@ -21,16 +21,28 @@ class GamePage extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.teal[50], // Light teal background for text
+                color: Colors.teal[50], // Light teal background for the text container
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Text(
-                'Currency: ${currencyProvider.currency}',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.teal[700],
-                ),
+              child: Row(
+                children: [
+                  // Display the currency image
+                  Image.asset(
+                    'assets/currencies/GachapomCoin.png', 
+                    height: 30, // Adjust the size of the currency image
+                    width: 30,  // Adjust the size of the currency image
+                  ),
+                  SizedBox(width: 8),
+                  // Display the currency amount
+                  Text(
+                    '${currencyProvider.currency}',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal[700],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

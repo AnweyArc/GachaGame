@@ -62,6 +62,7 @@ flutter:
   uses-material-design: true
 
   assets: 
+  # cards1
   - assets/cardbackgrounds/Common.jpg
   - assets/cardbackgrounds/Normal.jpg
   - assets/cardbackgrounds/Rare.jpg
@@ -71,6 +72,17 @@ flutter:
   - assets/cardbackgrounds/Ultimate.jpg
   - assets/cardbackgrounds/SecretRarity.jpg
   - assets/cardbackgrounds/Godly.jpg
+
+  #SummoningGems
+
+  - assets/summongems/x1.png
+  - assets/summongems/x5.png
+  - assets/summongems/x10.png
+  - assets/summongems/x50.png
+  - assets/summongems/x100.png
+
+  #Currencies
+  - assets/currencies/GachapomCoin.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
